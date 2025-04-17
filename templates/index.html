@@ -21,16 +21,13 @@ class="container my-5 p-4  w-80 shadow rounded bg-white"  >
     <button type="submit" class="btn btn-primary w-100">Add Todo</button>
   </form>
 </div>
-
 <div class="container my-5">
   <h2 class="text-center text-success mb-4">📋 Your Todos</h2>
-
   {% if alltodo|length == 0 %}
     <div class="alert alert-warning text-center" role="alert">
       🚨 No Todos Found! Hurry up – add your first todo now!
     </div>
   {% else %}
-
   <!-- Desktop Table View -->
   <div class="table-responsive d-none d-md-block">
     <table class="table table-hover align-middle table-sm text-nowrap" style="font-size: 0.85rem;">
@@ -64,7 +61,6 @@ class="container my-5 p-4  w-80 shadow rounded bg-white"  >
       </tbody>
     </table>
   </div>
-
   <!-- Mobile Accordion View -->
   <div class="accordion d-md-none" id="todoAccordion">
     {% for todo in alltodo %}
@@ -122,8 +118,6 @@ class="container my-5 p-4  w-80 shadow rounded bg-white"  >
             row.classList.remove('bg-primary', 'text-white');
           }
         }
-
-        // --- Handle Mobile Accordion Item ---
         if (cardId) {
           const card = document.getElementById(cardId);
           if (card) {
@@ -147,8 +141,6 @@ class="container my-5 p-4  w-80 shadow rounded bg-white"  >
                 // Remove previous conflicting class if it was ever added
                 body.classList.remove('text-white');
             }
-
-            // Remove previous conflicting classes if they were ever added
             card.classList.remove('bg-primary', 'text-white');
           }
         }
