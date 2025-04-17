@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% set show_nav = true %}
+{% block body %}
+<Style>
+  .w-80 {
+    width: 88%;
+  }
+</Style>
+<div 
+class="container my-5 p-4  w-80 shadow rounded bg-white"  >
+  <h2 class="text-center mb-4 text-primary">📝 Add Your Todo</h2>
+  <form action="/" method="POST">
+    <div class="mb-3">
+      <label for="title" class="form-label">Todo Title</label>
+      <input type="text" class="form-control" name="title" id="title" placeholder="Enter a title...">
+    </div>
+    <div class="mb-3">
+      <label for="description" class="form-label">Description</label>
+      <input type="text" class="form-control" name="description" id="description" placeholder="Enter a description...">
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Add Todo</button>
+  </form>
+</div>
+
+<div class="container my-5">
+  <h2 class="text-center text-success mb-4">📋 Your Todos</h2>
+
+  {% if alltodo|length == 0 %}
+    <div class="alert alert-warning text-center" role="alert">
+      🚨 No Todos Found! Hurry up – add your first todo now!
+    </div>
+  {% else %}
+
+  <!-- Desktop Table View -->
+  <div class="table-responsive d-none d-md-block">
+    <table class="table table-hover align-middle table-sm text-nowrap" style="font-size: 0.85rem;">
+      <thead class="table-primary">
+        <tr>
+          <th>S.No</th>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Created At</th>
+          <th>Actions</th>
+          <th>Mark</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for todo in alltodo %}
+        <tr id="row{{ loop.index }}">
+          <td>{{ loop.index }}</td>
+          <td>{{ todo.title }}</td>
+          <td>{{ todo.description }}</td>
+          <td>{{ todo.date_created.strftime('%b %d, %Y %I:%M %p') }}</td>
+          <td>
+            <a href="/delete/{{ todo.sno }}" class="btn btn-outline-dark btn-sm me-2">Delete</a>
+            <a href="/update/{{ todo.sno }}" class="btn btn-outline-dark btn-sm">Update</a>
+          </td>
+          <td>
+            <input class="form-check-input mark-done" type="checkbox" data-row="row{{ loop.index }}" id="todoCheck{{ loop.index }}">
+            <label class="form-check-label" for="todoCheck{{ loop.index }}"></label>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mobile Accordion View -->
+  <div class="accordion d-md-none" id="todoAccordion">
+    {% for todo in alltodo %}
+    <div class="accordion-item mb-2" id="card{{ loop.index }}">
+      <h2 class="accordion-header" id="heading{{ loop.index }}">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="false" aria-controls="collapse{{ loop.index }}">
+          {{ todo.title }}
+        </button>
+      </h2>
+      <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#todoAccordion">
+        <div class="accordion-body">
+          <p><strong>Description:</strong> {{ todo.description }}</p>
+          <p><strong>Created At:</strong> {{ todo.date_created.strftime('%b %d, %Y %I:%M %p') }}</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <a href="/delete/{{ todo.sno }}" class="btn btn-outline-danger btn-sm">Delete</a>
+              <a href="/update/{{ todo.sno }}" class="btn btn-outline-primary btn-sm">Update</a>
+            </div>
+            <div>
+              <input class="form-check-input mark-done" type="checkbox" data-card="card{{ loop.index }}" id="todoCheckMobile{{ loop.index }}">
+              <label class="form-check-label" for="todoCheckMobile{{ loop.index }}">Mark</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+<!-- Mark Done Script -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const checkboxes = document.querySelectorAll('.mark-done');
+    checkboxes.forEach(box => {
+      box.addEventListener('change', function () {
+        const rowId = this.dataset.row;
+        const cardId = this.dataset.card;
+        const isChecked = this.checked; // Get the current checked state
+        // --- Handle Desktop Table Row ---
+        if (rowId) {
+          const row = document.getElementById(rowId);
+          if (row) {
+            // Toggle a class on the row for optional background/strikethrough
+            row.classList.toggle('item-complete', isChecked);
+            // Find all relevant text cells within this row
+            // Using .todo-text helps target the specific cells if you keep the class
+            const cells = row.querySelectorAll('td.todo-text');
+            cells.forEach(cell => {
+              // Toggle the blue text color class
+              cell.classList.toggle('marked-done-text', isChecked);
+            });
+
+            // Remove previous conflicting classes if they were ever added
+            row.classList.remove('bg-primary', 'text-white');
+          }
+        }
+
+        // --- Handle Mobile Accordion Item ---
+        if (cardId) {
+          const card = document.getElementById(cardId);
+          if (card) {
+            // Toggle a class on the card for optional background/strikethrough
+            card.classList.toggle('item-complete', isChecked);
+
+            // Find the accordion button (header text)
+            const button = card.querySelector('.accordion-button');
+            if (button) {
+              // Toggle the blue text color class on the button text
+              button.classList.toggle('marked-done-text', isChecked);
+            }
+
+            // Find the accordion body
+            const body = card.querySelector('.accordion-body');
+            if (body) {
+                // Toggle the blue text color on the body's text elements
+                // You might want to be more specific if needed, e.g., body.querySelectorAll('p')
+                body.classList.toggle('marked-done-text', isChecked);
+
+                // Remove previous conflicting class if it was ever added
+                body.classList.remove('text-white');
+            }
+
+            // Remove previous conflicting classes if they were ever added
+            card.classList.remove('bg-primary', 'text-white');
+          }
+        }
+      });
+    });
+  });
+</script>
+{% endblock body %}
