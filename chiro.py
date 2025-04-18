@@ -14,7 +14,7 @@ class Todo(db.Model):
     def __repr__(self)->str:
         return f"{self.sno},{self.title}"
 @chiro.route("/",methods=["GET","POST"])
-def hello_world():
+def index():
     if request.method=='POST':
         title=request.form['title']
         description=request.form['description']
