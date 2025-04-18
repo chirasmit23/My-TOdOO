@@ -52,8 +52,6 @@ def update(sno):
 @chiro.route("/instructions")
 def instructions():
     return render_template("instructions.html")
-def handler(request, context):
-    return app(request.environ, start_response=lambda *args: None)
 if __name__=="__main__":
     chiro.run(debug=True,port=10000)
    
